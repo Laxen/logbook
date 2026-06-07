@@ -7,9 +7,10 @@ from flask import Flask, render_template, request
 app = Flask(__name__)
 NOTES_DIR = Path(os.environ.get("NOTES_DIR", "/share/logbook"))
 MAX_NOTE_BYTES = 5 * 1024 * 1024
-app.config["MAX_FORM_MEMORY_SIZE"] = MAX_NOTE_BYTES + 1024
-app.config["MAX_CONTENT_LENGTH"] = MAX_NOTE_BYTES + 1024
-app.request_class.max_form_memory_size = MAX_NOTE_BYTES + 1024
+MAX_REQUEST_BYTES = 100 * 1024 * 1024
+app.config["MAX_FORM_MEMORY_SIZE"] = MAX_REQUEST_BYTES
+app.config["MAX_CONTENT_LENGTH"] = MAX_REQUEST_BYTES
+app.request_class.max_form_memory_size = MAX_REQUEST_BYTES
 
 def _note_file_path(date_str: str) -> Path:
     NOTES_DIR.mkdir(parents=True, exist_ok=True)
@@ -53,8 +54,7 @@ def index() -> str:
 
 
 @app.errorhandler(413)
-def request_too_large(error: object) -> tuple[str, int]:
-    _ = error
+def request_too_large(_error: object) -> tuple[str, int]:
     current_date = datetime.now().strftime("%Y-%m-%d")
     return (
         render_template(
