@@ -7,8 +7,7 @@ from flask import Flask, render_template, request
 app = Flask(__name__)
 NOTES_DIR = Path(os.environ.get("NOTES_DIR", "/share/logbook"))
 MAX_NOTE_BYTES = 5 * 1024 * 1024
-MAX_REQUEST_BYTES = 10 * 1024 * 1024
-app.config["MAX_FORM_MEMORY_SIZE"] = MAX_REQUEST_BYTES
+MAX_REQUEST_BYTES = MAX_NOTE_BYTES + (256 * 1024)
 app.config["MAX_CONTENT_LENGTH"] = MAX_REQUEST_BYTES
 app.request_class.max_form_memory_size = MAX_REQUEST_BYTES
 
