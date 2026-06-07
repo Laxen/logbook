@@ -42,6 +42,11 @@
         gap: 0.75rem;
       }
 
+      label {
+        font-size: 0.9rem;
+        color: #3c4043;
+      }
+
       textarea {
         width: 100%;
         min-height: calc(100dvh - 11rem);
@@ -76,8 +81,9 @@
     <main>
       <h1>Daily Note</h1>
       <p>{{ date }}. Write, save, and continue anytime today.</p>
-      <form method="post">
-        <textarea name="note" wrap="soft" placeholder="Write anything...">{{ note | e }}</textarea>
+      <form method="post" onsubmit="this.querySelector('button').disabled=true;this.querySelector('button').textContent='Saving...';">
+        <label for="note">Note</label>
+        <textarea id="note" name="note" wrap="soft" placeholder="Write anything...">{{ note | e }}</textarea>
         <div class="message" aria-live="polite">{{ message }}</div>
         <button type="submit">Save</button>
       </form>
