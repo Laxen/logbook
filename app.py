@@ -53,7 +53,8 @@ def index() -> str:
 
 
 @app.errorhandler(413)
-def request_too_large(_error: object) -> tuple[str, int]:
+def request_too_large(error: object) -> tuple[str, int]:
+    _ = error
     current_date = datetime.now().strftime("%Y-%m-%d")
     return (
         render_template(
