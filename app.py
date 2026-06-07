@@ -11,52 +11,55 @@ app.config["MAX_FORM_MEMORY_SIZE"] = MAX_NOTE_BYTES + 1024
 app.config["MAX_CONTENT_LENGTH"] = MAX_NOTE_BYTES + 1024
 app.request_class.max_form_memory_size = MAX_NOTE_BYTES + 1024
 
-
-def _today_file_path() -> Path:
+def _note_file_path(date_str: str) -> Path:
     NOTES_DIR.mkdir(parents=True, exist_ok=True)
-    return NOTES_DIR / f"{datetime.now().strftime('%Y-%m-%d')}.txt"
+    return NOTES_DIR / f"{date_str}.txt"
 
 
-def _load_today_note() -> str:
-    note_file = _today_file_path()
+def _load_note(date_str: str) -> str:
+    note_file = _note_file_path(date_str)
     if not note_file.exists():
         return ""
     return note_file.read_text(encoding="utf-8", errors="replace")
 
 
-def _save_today_note(note_text: str) -> bool:
+def _save_note(date_str: str, note_text: str) -> bool:
     if len(note_text.encode("utf-8")) > MAX_NOTE_BYTES:
         return False
 
-    note_file = _today_file_path()
+    note_file = _note_file_path(date_str)
     note_file.write_text(note_text, encoding="utf-8")
     return True
 
 
 @app.route("/", methods=["GET", "POST"])
 def index() -> str:
+    current_date = datetime.now().strftime("%Y-%m-%d")
     message = ""
+    note = _load_note(current_date)
     if request.method == "POST":
-        if _save_today_note(request.form.get("note", "")):
+        note = request.form.get("note", "")
+        if _save_note(current_date, note):
             message = "Saved"
         else:
             message = "Note is too large (max 5 MB)."
 
     return render_template(
         "index.html",
-        note=_load_today_note(),
-        date=datetime.now().strftime("%Y-%m-%d"),
+        note=note,
+        date=current_date,
         message=message,
     )
 
 
 @app.errorhandler(413)
 def request_too_large(_error: object) -> tuple[str, int]:
+    current_date = datetime.now().strftime("%Y-%m-%d")
     return (
         render_template(
             "index.html",
-            note=_load_today_note(),
-            date=datetime.now().strftime("%Y-%m-%d"),
+            note=_load_note(current_date),
+            date=current_date,
             message="Note is too large (max 5 MB).",
         ),
         413,
