@@ -77,7 +77,7 @@
       <h1>Daily Note</h1>
       <p>{{ date }}. Write, save, and continue anytime today.</p>
       <form method="post">
-        <textarea name="note" wrap="soft" placeholder="Write anything...">{{ note }}</textarea>
+        <textarea name="note" wrap="soft" placeholder="Write anything...">{{ note | e }}</textarea>
         <div class="message" aria-live="polite">{{ message }}</div>
         <button type="submit">Save</button>
       </form>

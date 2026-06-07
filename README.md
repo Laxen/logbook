@@ -10,6 +10,6 @@ A minimal Home Assistant app/add-on for daily notes.
 
 ## Files
 
-- `/tmp/workspace/Laxen/logbook/config.yaml` — Home Assistant app/add-on metadata
-- `/tmp/workspace/Laxen/logbook/app.py` — lightweight Flask server
-- `/tmp/workspace/Laxen/logbook/templates/index.html` — minimalist mobile-friendly UI
+- `config.yaml` — Home Assistant app/add-on metadata
+- `app.py` — lightweight Flask server
+- `templates/index.html` — minimalist mobile-friendly UI
