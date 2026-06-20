@@ -7,14 +7,32 @@
     <style>
       :root {
         color-scheme: light;
+        --bg: #f7f7f8;
+        --fg: #202124;
+        --fg-muted: #5f6368;
+        --fg-label: #3c4043;
+        --border: #dadce0;
+        --textarea-bg: #ffffff;
+        --textarea-fg: #202124;
+      }
+
+      :root.dark {
+        color-scheme: dark;
+        --bg: #1a1a1e;
+        --fg: #e4e4e7;
+        --fg-muted: #a1a1aa;
+        --fg-label: #d4d4d8;
+        --border: #3f3f46;
+        --textarea-bg: #27272a;
+        --textarea-fg: #e4e4e7;
       }
 
       body {
         margin: 0;
         min-height: 100dvh;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background: #f7f7f8;
-        color: #202124;
+        background: var(--bg);
+        color: var(--fg);
       }
 
       main {
@@ -22,6 +40,13 @@
         margin: 0 auto;
         padding: 1rem;
         box-sizing: border-box;
+      }
+
+      header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 0;
       }
 
       h1 {
@@ -32,7 +57,7 @@
 
       p {
         margin: 0.25rem 0 0.75rem;
-        color: #5f6368;
+        color: var(--fg-muted);
         font-size: 0.9rem;
       }
 
@@ -44,23 +69,25 @@
 
       label {
         font-size: 0.9rem;
-        color: #3c4043;
+        color: var(--fg-label);
       }
 
       textarea {
         width: 100%;
         min-height: calc(100dvh - 11rem);
         box-sizing: border-box;
-        border: 1px solid #dadce0;
+        border: 1px solid var(--border);
         border-radius: 0.75rem;
         padding: 0.9rem;
         resize: vertical;
         font-size: 1rem;
         line-height: 1.45;
         overflow: auto;
+        background: var(--textarea-bg);
+        color: var(--textarea-fg);
       }
 
-      button {
+      button[type="submit"] {
         align-self: flex-end;
         border: 0;
         border-radius: 999px;
@@ -68,6 +95,7 @@
         font-weight: 600;
         background: #1a73e8;
         color: #fff;
+        cursor: pointer;
       }
 
       .message {
@@ -75,11 +103,25 @@
         font-size: 0.85rem;
         color: #188038;
       }
+
+      #dark-toggle {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.85rem;
+        color: var(--fg-muted);
+        cursor: pointer;
+        line-height: 1;
+      }
     </style>
   </head>
   <body>
     <main>
-      <h1>Daily Note</h1>
+      <header>
+        <h1>Daily Note</h1>
+        <button id="dark-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+      </header>
       <p>{{ date }}. Write, save, and continue anytime today.</p>
       <form method="post" onsubmit="this.setAttribute('aria-busy','true');this.querySelector('button').disabled=true;this.querySelector('button').textContent='Saving...';">
         <label for="note">Note</label>
@@ -88,5 +130,31 @@
         <button type="submit">Save</button>
       </form>
     </main>
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var btn = document.getElementById('dark-toggle');
+        var stored = localStorage.getItem('logbook-theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        function setDark(on) {
+          if (on) {
+            root.classList.add('dark');
+            btn.textContent = '☀️';
+          } else {
+            root.classList.remove('dark');
+            btn.textContent = '🌙';
+          }
+        }
+
+        setDark(stored === 'dark' || (stored === null && prefersDark));
+
+        btn.addEventListener('click', function () {
+          var isDark = root.classList.contains('dark');
+          setDark(!isDark);
+          localStorage.setItem('logbook-theme', isDark ? 'light' : 'dark');
+        });
+      })();
+    </script>
   </body>
 </html>
